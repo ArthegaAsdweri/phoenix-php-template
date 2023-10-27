@@ -1,0 +1,7 @@
+Config:
+  PSR_NAMESPACE: YourNameSpaceGoesHere
+
+  AXIOS: true
+  DOMAIN: your-domain.tld
+  FILE_ROOT: src
+  VUETIFY: true

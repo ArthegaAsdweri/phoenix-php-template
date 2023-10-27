@@ -1,0 +1,4 @@
+.idea
+vendor
+src/Resources/Cache/*
+composer.lock

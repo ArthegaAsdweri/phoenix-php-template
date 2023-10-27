@@ -1,0 +1,13 @@
+<Files .htaccess>
+    Order deny,allow
+    deny from all
+</Files>
+
+RewriteEngine on
+
+RewriteCond %{REQUEST_URI} \.(webp|jpg|png|svg|js|css|woff|woff2|ico|webmanifest|xml|txt|pdf)$
+RewriteRule .* - [skip=3]
+
+RewriteRule ^(.*?)/(.*?)/(.*?)/?$	index.php?requestPage=$1&requestAction=$2&requestArgument=$3 [L,QSA]
+RewriteRule ^(.*?)/(.*?)/?$ 		index.php?requestPage=$1&requestAction=$2 [L,QSA]
+RewriteRule ^(.*?)/?$				index.php?requestPage=$1 [L,QSA]

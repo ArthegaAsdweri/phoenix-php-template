@@ -1,0 +1,16 @@
+{
+    "require": {
+        "arthega-asdweri/phoenix-php": "^0.9.0",
+        "symfony/yaml": "^6.3"
+    },
+   "autoload": {
+      "psr-4": {
+         "YourNameSpaceGoesHere\\": "src"
+      }
+   },
+   "autoload-dev": {
+      "psr-4": {
+         "YourNameSpaceGoesHere\\": "tests"
+      }
+   }
+}

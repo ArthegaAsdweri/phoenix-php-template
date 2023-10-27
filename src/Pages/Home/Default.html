@@ -1,0 +1,461 @@
+<v-container class="py-5 mainContent">
+    <div class="textWidth">
+        <h1 class="my-5">Welcome to <span>Phoenix PHP</span></h1>
+        <p>
+            This framework follows an URI driven MVC approach and includes Vue as an optional frontend template
+            engine that just works out of the box without any additional installation hassle.
+        </p>
+        <p>
+            Everything mentioned here also applies to this demo and can be looked up in the directory directly
+            if you prefer so.
+        </p>
+        <p>
+            This example is a template that shows you how the framework works.
+            <br>
+            Let's have a look at the directory structure first:
+        </p>
+        <ph-treeview></ph-treeview>
+        <br>
+        <p>
+            As you can see we have a few required and a few optional directories. Let's have a look at the
+            required
+            ones first. For better understanding the framework we will start from the highest hierarchy.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="You're on Earth, there's no cure for that!"></ph-quote>
+
+<v-container id="PageWrapper" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">PageWrapper</h2>
+        <p>
+            The framework assumes that every website has the same basic layout with the same header, footer,
+            menu and so on. It assumes that the actual changing contents depend on the called URI. So there is a
+            separation between the wrapper and the actual contents of a page.
+        </p>
+        <div class="tutorialWrapper my-5">
+            <span>PageWrapper</span>
+            <div class="tutorialContent">
+                Page
+            </div>
+        </div>
+        <p>
+            Since this demo has the same header, footer and navigation we put those things into the PageWrapper.
+            In this example we have a relatively simple template with a few placeholders and a general layout.
+        </p>
+        <p>
+            (This demo uses Vuetify in case you have not heard of it. It's a material design framework for Vue.)
+        </p>
+        <strong>PageWrapper/PageWrapper.html</strong>
+        <img src="src/Resources/Images/pagewrapper-html.webp"/>
+        <br>
+        <br>
+        <p>
+            As you can see there are some placeholders for the page content, the navigation and a
+            sample burger icon. The <span class="ci-orange">placeholders always start with two curly brackets, 
+                    followed by an uppercase string, ending with two curly brackets.</span>
+        </p>
+        <p>
+            So let's have a look at the Template Parser this framework uses to understand how that works.
+        </p>
+        <p>
+            Everything being rendered uses a template parsing engine combined of a PHP Class and an HTML File.
+            Of course this excludes Vue components.
+        </p>
+        <strong>PageWrapper/PageWrapper.php</strong>
+        <img src="src/Resources/Images/pagewrapper-php.webp"/>
+        <p>
+            First we create a Parser instance with the path to the PageWrapper.html template. The path is stored
+            inside a class variable already - so we can use that.<br>
+            The parsing itself is done with the <span class="ci-orange">$this->parse()</span> method that accepts two
+            parameters, the placeholder followed by the string that replaces the placeholder.
+        </p>
+        <p>
+            Basically the Parser just analyzes the given template and looks for the placeholder and - after
+            finding the string - replaces the contents.
+        </p>
+        <p>
+            Now let's have a look at how the page content is generated with <span
+            class="ci-orange">$this->getPageContent()</span>.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="Words are the clothes thoughts wear."></ph-quote>
+
+<v-container id="PageWrapper" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">Request Handling</h2>
+        <p>
+            As mentioned before the framework is URI driven, so it will automatically look for pages called.
+        </p>
+        <p>
+            How does this work? Let's have a look at the following URI:
+        </p>
+        <code class="code">
+            www.your-domain.tld/newsletter/unsubscribe/11f6ad8ec52a2984abaafd7c3b516503785c2072
+        </code>
+        <p>
+            The framework will create the following parts:
+        </p>
+        <v-simple-table>
+            <template v-slot:default>
+                <tbody>
+                <tr>
+                    <td>domain</td>
+                    <td>www.your-domain.tld</td>
+                </tr>
+                <tr>
+                    <td>page</td>
+                    <td>newsletter</td>
+                </tr>
+                <tr>
+                    <td>action</td>
+                    <td>unsubscribe</td>
+                </tr>
+                <tr>
+                    <td>argument</td>
+                    <td>11f6ad8ec52a2984abaafd7c3b516503785c2072</td>
+                </tr>
+                </tbody>
+            </template>
+        </v-simple-table>
+        <br>
+        <p>
+            When we look at restful APIs this should be sufficient to cover most use cases.
+        </p>
+        <p>
+            This would result in the following directory structure:
+        </p>
+        <v-treeview
+            class="treeview"
+            :open="['Pages','Newsletter']"
+            :items="[{
+                        name:'Pages',
+                        children:[{
+                            name:'Newsletter',
+                            children:[
+                                {
+                                    name:'Default.html',
+                                    file:'language-html5'
+                                },
+                                {
+                                    name:'DefaultAction.php',
+                                    file:'file-code'
+                                },
+                                {
+                                    name:'UnsubscribeAction.php',
+                                    file:'file-code'
+                                }
+                            ]
+                        }]
+                    }]"
+            item-key="name"
+            dark
+        >
+            <template v-slot:prepend="{ item, open }">
+                <v-icon v-if="!item.file">
+                    {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                </v-icon>
+                <v-icon v-else>
+                    mdi-{{ item.file }}
+                </v-icon>
+            </template>
+        </v-treeview>
+        <br>
+        <p>
+            The first parameter after the slash will be interpreted as a <span class="ci-orange">Page</span>,
+            the second as an <span class="ci-orange">Action</span>.
+        </p>
+        <p>
+            As you can see, every Action has its own class that will be called, because depending on the page
+            there might be different parts of logic.
+        </p>
+        <p> A newsletter page is a good example because usually it runs in different steps. First you have to
+            subscribe and fill out some kind of form (DefaultAction), afterward you might be forwarded to some
+            kind of success page where you have an introduction of the doubleOptIn steps (SuccessAction) and
+            after clicking the doubleOptIn you might have a validation page (ValidationAction) that verifies the
+            duration of the link and so on.
+        </p>
+        <p>
+            Still all of those steps are part of one page that might share the same base template and therefore
+            belong into the Newsletter directory.
+        </p>
+        <p>
+            Some of those Actions might require templates - others might not.
+        </p>
+        <p>
+            The third parameter is an optional <span class="ci-orange">Argument</span> you might want to pass to
+            a page. In this example: the hash from the unsubscribe-email. Of course, you can still pass more
+            additional GET-Parameters if you see fit.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="The end is in the beginning and yet you go on."></ph-quote>
+
+<v-container id="Pages" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">Pages</h2>
+        <p>
+            The structure of pages is relatively simple. You have two abstract methods that are required for the
+            page to work and you have a few options to set up custom page properties like Meta-Title and Meta-
+            Description.
+        </p>
+        <strong>Pages/Home/DefaultAction.php</strong>
+        <img src="src/Resources/Images/page-php.webp"/>
+        <br>
+        <br>
+        <p>
+            <span class="ci-orange">parseContent()</span><br>
+            In this example there's nothing much to do in terms of content parsing. We had a look at that in the
+            PageWrapper part. Basically you can just use the PageWrapper and Pages and the framework will work
+            perfectly. But as you can see we have a new method here:
+        </p>
+        <p>
+            <span class="ci-orange">parseVueComponents()</span><br>
+            Again - this method applies to all structural parts of the framework. So also for the PageWrapper
+            where we included some Vue components as well. But here you can see how it's done. Basically you
+            just register the component by using its name and the framework will take care of everything else on
+            its own.
+        </p>
+        <p>
+            After registering the components we can just use the components in the template like we did in the
+            demo here:
+        </p>
+        <strong>Pages/Home/Default.html</strong>
+        <img src="src/Resources/Images/page-html.webp"/>
+        <br>
+        <br>
+        <p>
+            Now is a good time to dive a little deeper into the addition of Vue components.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="Ever tried. Ever failed. No matter. Try again. Fail again. Fail better."></ph-quote>
+
+<v-container id="Components" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">Vue Components</h2>
+        <p>
+            As you can see in the project directory every Page is able to add Vue Components. Before registering
+            them in the Page or PageWrapper you must make sure to create the Components directory inside. Then
+            you just create the Vue files.<br>
+        </p>
+        <p>
+            <strong>Important:</strong> This framework uses Single File Components (SFC). If you don't know what
+            that means please read up on that
+            <a href="https://v2.vuejs.org/v2/guide/single-file-components">here</a>.
+        </p>
+        <v-treeview
+            class="treeview"
+            :open="['Home','Components']"
+            :items="[{
+                        name:'Home',
+                        children:[
+                            {
+                                name:'Components',
+                                children:[
+                                    {
+                                        name:'ph-quote.vue',
+                                        file:'vuejs'
+                                    },
+                                    {
+                                        name:'ph-treeview.vue',
+                                        file:'vuejs'
+                                    }
+                                ]
+                            },
+                            {
+                                name:'Default.html',
+                                file:'language-html5'
+                            },
+                            {
+                                name:'DefaultAction.php',
+                                file:'file-code'
+                            }
+                        ]
+                    }]"
+            item-key="name"
+            dark
+        >
+            <template v-slot:prepend="{ item, open }">
+                <v-icon v-if="!item.file">
+                    {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                </v-icon>
+                <v-icon v-else>
+                    mdi-{{ item.file }}
+                </v-icon>
+            </template>
+        </v-treeview>
+        <br>
+        <p>
+            Now - there's nothing much to say about the Vue-Component itself. If you don't know about Vue I
+            would recommend the <a href="https://v2.vuejs.org/">official documentation</a>.
+        </p>
+        <p>
+            Just remember that the framework will rename the files to match the required Vue syntax in camelCase
+            - even if your component is named with kebab-case. But you should already be aware of that if you
+            know Vue and the limitations HTML tags have.
+        </p>
+        <strong>Pages/Home/Components/ph-quote.vue</strong>
+        <img src="src/Resources/Images/vue-component.webp"/>
+        <br>
+        <br>
+        <p>
+            Now that's everything there is to say about the basics of using components.<br>
+            Let's get back to the screenshot we had a look at earlier.
+        </p>
+        <strong>PageWrapper/PageWrapper.php</strong>
+        <img src="src/Resources/Images/pagewrapper-php.webp"/>
+        <br>
+        <br>
+        <p>
+            So until now we talked about the pages and Vue components. <span
+            class="ci-orange">$this->getPageContent()</span>
+            will return the contents of the rendered Page and its Action. It will also render all the necessary
+            Vue components.
+        </p>
+        <p>
+            But as you can see in the image we still have to talk about <span class="ci-orange">Modules</span>.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="There's man all over for you, blaming on his boots the fault of his feet."></ph-quote>
+
+<v-container id="Modules" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">Modules</h2>
+        <p>
+            What exactly are Modules? Modules are basically PHP components which are used multiple times across
+            the project. For example: Imagine you have a Login functionality and you want to either show the
+            login button or the avatar for the logged-in user. And you want to include that feature across
+            multiple pages. Or imagine you want to use the quote component we added to the Home/DefaultAction to
+            other Pages. Then it would be useful to make a <span class="ci-orange">Module</span> out of it.
+        </p>
+        <p>
+            Modules basically have the same structure you already learned about:
+        </p>
+        <v-treeview
+            class="treeview"
+            :open="['Modules','Navigation','Components']"
+            :items="[{
+                        name:'Modules',
+                        children:[{
+                            name:'Navigation',
+                            children:[
+                                {
+                                    name:'Components',
+                                    children:[
+                                        {
+                                            name:'ph-navigation.vue',
+                                            file:'vuejs'
+                                        },
+                                        {
+                                            name:'ph-navlist.vue',
+                                            file:'vuejs'
+                                        }
+                                    ]
+                                },
+                                {
+                                    name:'Default.html',
+                                    file:'language-html5'
+                                },
+                                {
+                                    name:'DefaultAction.php',
+                                    file:'file-code'
+                                }
+                            ]
+                        }]
+                    }]"
+            item-key="name"
+            dark
+        >
+            <template v-slot:prepend="{ item, open }">
+                <v-icon v-if="!item.file">
+                    {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
+                </v-icon>
+                <v-icon v-else>
+                    mdi-{{ item.file }}
+                </v-icon>
+            </template>
+        </v-treeview>
+        <br>
+        <p>
+            You have templates and actions and you can add Vue components with the same methods you already
+            know:
+        </p>
+        <strong>Modules/Navigation/DefaultAction.php</strong>
+        <img src="src/Resources/Images/module-php.webp"/>
+        <br><br>
+        <p>
+            The template in this case only consists of calling the Vue component - but it could offer everything
+            you want to put in here.
+        </p>
+        <strong>Modules/Navigation/Default.html</strong>
+        <img src="src/Resources/Images/module-html.webp"/>
+        <br><br>
+        <p>
+            Basically you register Modules inside Pages and PageWrapper by using the <span class="ci-orange">$this->callModule()</span>
+            method. It takes two parameters where the first is the name of the module, the second is optional
+            and can be used to define the action you want to call.
+        </p>
+        <p>
+            You can then pass the Module-Object to the <span class="ci-orange">$this->renderModule()</span> method.
+            The callModule() method returns the object, so you can set up all the setters and getters you need
+            to make the module work as expected.
+        </p>
+    </div>
+</v-container>
+
+<ph-quote text="The above quotes are from Samuel Beckett."></ph-quote>
+
+<v-container id="Modules" class="py-5 mainContent">
+    <div class="textWidth">
+        <h2 class="my-5">CSS &amp; JS Resources</h2>
+        <p>
+            Last but not least - let's talk about how Resources work.
+        </p>
+        <p>
+            Every page is able to register several parts of CSS and JS extensions.
+        </p>
+        <v-simple-table>
+            <template v-slot:default>
+                <tbody>
+                <tr>
+                    <td><span class="ci-orange">registerCss()</span></td>
+                    <td>will load a CSS file located under <span
+                        class="ci-orange">/Resources/Css</span></td>
+                </tr>
+                <tr>
+                    <td><span class="ci-orange">registerJs()</span></td>
+                    <td>will load a JS file located under <span
+                        class="ci-orange">Resources/Js</span></td>
+                </tr>
+                <tr>
+                    <td><span class="ci-orange">registerExternalJs()</span></td>
+                    <td>will load an external JS file located somewhere in the internet at the <span class="ci-orange">
+                        end of the body-tag.</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="ci-orange">registerInlineJs()</span></td>
+                    <td>will parse JavaScript code at the <span class="ci-orange">end of the header-tag.</span></td>
+                </tr>
+                </tbody>
+            </template>
+        </v-simple-table>
+        <br>
+        <p>
+            The framework will automatically merge all the CSS or JS resources containing everything - even the Vue
+            components contents into one cache-file under <span class="ci-orange">Resources/Cache</span> Depending on
+            the combination of files it will result in different cache files.
+        </p>
+        <p>
+            This should cover the basics. You find the complete documentation here: TODO
+        </p>
+    </div>
+</v-container>
