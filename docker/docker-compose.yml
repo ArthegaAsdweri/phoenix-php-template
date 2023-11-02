@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+
+  phoenix-template:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: phoenix-template
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Berlin
+      VIRTUAL_HOST: phoenix-template
+      DEVELOPER: "true"
+    volumes:
+      - ./../:/var/www/html
+      - ./logs/:/var/log/phoenix
+      - ./apache2.conf:/etc/apache2/apache2.conf
+      - ./extensions.ini:/usr/local/etc/php/conf.d/extensions.ini
+    networks:
+      - frontend
+    
+networks:
+  frontend:
+    name: frontend
+    driver: bridge
+  backend:
+    name: backend
+    driver: bridge
